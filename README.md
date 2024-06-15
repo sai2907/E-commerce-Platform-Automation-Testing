@@ -20,7 +20,7 @@ This repository contains the automated testing scripts and configurations for an
 - `Jenkinsfile`: CI/CD pipeline configuration
 
 ## Setup Instructions
-1. Clone the repository: `git clone https://github.com/shanmugasai-v/ecommerce-platform-automation-testing.git`
+1. Clone the repository: `git clone https://github.com/sai2907/ecommerce-platform-automation-testing.git`
 2. Navigate to the project directory: `cd ecommerce-platform-automation-testing`
 3. Follow the setup instructions in the respective directories to configure and run the tests.
 
