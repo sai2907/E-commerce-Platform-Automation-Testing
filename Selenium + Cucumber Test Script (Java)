@@ -1,0 +1,156 @@
+Project Structure
+ecommerce-platform-automation-testing/
+├── src/
+│   ├── main/
+│   └── test/
+│       ├── java/
+│       │   └── com/
+│       │       └── ecommerce/
+│       │           ├── runner/
+│       │           │   └── TestRunner.java
+│       │           ├── steps/
+│       │           │   └── CheckoutSteps.java
+│       │           └── pages/
+│       │               └── CheckoutPage.java
+│       └── resources/
+│           └── features/
+│               └── Checkout.feature
+├── pom.xml
+└── README.md
+pom.xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/POM/4.0.0">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.ecommerce</groupId>
+    <artifactId>ecommerce-platform-automation-testing</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <dependencies>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>3.141.59</version>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>6.9.1</version>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit</artifactId>
+            <version>6.9.1</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+Checkout.feature
+Feature: Checkout process
+
+  Scenario: Successful checkout
+    Given the user is on the checkout page
+    When the user enters valid payment details
+    And the user submits the order
+    Then the order confirmation page is displayed
+CheckoutPage.java
+package com.ecommerce.pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+
+public class CheckoutPage {
+    WebDriver driver;
+
+    By paymentDetailsField = By.id("payment-details");
+    By submitOrderButton = By.id("submit-order");
+    By orderConfirmationMessage = By.id("order-confirmation");
+
+    public CheckoutPage(WebDriver driver) {
+        this.driver = driver;
+    }
+
+    public void enterPaymentDetails(String paymentDetails) {
+        driver.findElement(paymentDetailsField).sendKeys(paymentDetails);
+    }
+
+    public void submitOrder() {
+        driver.findElement(submitOrderButton).click();
+    }
+
+    public boolean isOrderConfirmationDisplayed() {
+        return driver.findElement(orderConfirmationMessage).isDisplayed();
+    }
+}
+CheckoutSteps.java
+package com.ecommerce.steps;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+import com.ecommerce.pages.CheckoutPage;
+
+import io.cucumber.java.en.*;
+
+import static org.junit.Assert.assertTrue;
+
+public class CheckoutSteps {
+    WebDriver driver = new ChromeDriver();
+    CheckoutPage checkoutPage = new CheckoutPage(driver);
+
+    @Given("the user is on the checkout page")
+    public void the_user_is_on_the_checkout_page() {
+        driver.get("http://ecommerce-platform.com/checkout");
+    }
+
+    @When("the user enters valid payment details")
+    public void the_user_enters_valid_payment_details() {
+        checkoutPage.enterPaymentDetails("4111 1111 1111 1111");
+    }
+
+    @When("the user submits the order")
+    public void the_user_submits_the_order() {
+        checkoutPage.submitOrder();
+    }
+
+    @Then("the order confirmation page is displayed")
+    public void the_order_confirmation_page_is_displayed() {
+        assertTrue(checkoutPage.isOrderConfirmationDisplayed());
+        driver.quit();
+    }
+}
+TestRunner.java
+package com.ecommerce.runner;
+
+import org.junit.runner.RunWith;
+
+import io.cucumber.junit.Cucumber;
+import io.cucumber.junit.CucumberOptions;
+
+@RunWith(Cucumber.class)
+@CucumberOptions(
+    features = "src/test/resources/features",
+    glue = "com.ecommerce.steps"
+)
+public class TestRunner {
+}
